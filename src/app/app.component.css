@@ -1,0 +1,14 @@
+.content {
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #dd0031;
+  font-size: 2rem;
+}
+
+p {
+  font-size: 1.2rem;
+  color: #666;
+}

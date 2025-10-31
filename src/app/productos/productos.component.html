@@ -1,0 +1,166 @@
+<div class="productos-container">
+  <!-- Header -->
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <mat-card-title>Gestión de Productos</mat-card-title>
+      <mat-card-subtitle>Administre los productos de su inventario</mat-card-subtitle>
+      <button mat-raised-button color="accent" (click)="volverDashboard()">
+        <mat-icon>arrow_back</mat-icon>
+        Volver al Dashboard
+      </button>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Formulario de Producto -->
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>{{ editando ? 'edit' : 'add' }}</mat-icon>
+      </div>
+      <mat-card-title>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form [formGroup]="productoForm" (ngSubmit)="guardar()">
+        
+        <!-- Primera fila: Código y Nombre -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Código del Producto</mat-label>
+            <input matInput formControlName="codigo" placeholder="Ej: A001">
+            <mat-icon matSuffix>code</mat-icon>
+            <mat-error *ngIf="obtenerErrorCodigo()">{{ obtenerErrorCodigo() }}</mat-error>
+            <mat-hint>Debe iniciar con una letra seguida de números</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre del Producto</mat-label>
+            <input matInput formControlName="nombre" placeholder="Ingrese el nombre">
+            <mat-icon matSuffix>label</mat-icon>
+            <mat-error *ngIf="obtenerErrorNombre()">{{ obtenerErrorNombre() }}</mat-error>
+            <mat-hint>Mínimo 5 caracteres</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Segunda fila: Costo, Precio, Valor -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Costo</mat-label>
+            <input matInput type="number" formControlName="costo" step="0.01" min="0">
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-error *ngIf="obtenerErrorCosto()">{{ obtenerErrorCosto() }}</mat-error>
+            <mat-hint>Debe ser mayor a cero</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Precio</mat-label>
+            <input matInput type="number" formControlName="precio" step="0.01" min="10" max="100">
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-error *ngIf="obtenerErrorPrecio()">{{ obtenerErrorPrecio() }}</mat-error>
+            <mat-hint>Rango: $10.00 - $100.00</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Valor</mat-label>
+            <input matInput type="number" formControlName="valor" step="0.01" min="0">
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-error *ngIf="obtenerErrorValor()">{{ obtenerErrorValor() }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Botones del formulario -->
+        <div class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="enviando || productoForm.invalid">
+            <mat-icon>{{ editando ? 'save' : 'add' }}</mat-icon>
+            <span *ngIf="enviando">Guardando...</span>
+            <span *ngIf="!enviando">{{ editando ? 'Actualizar' : 'Guardar' }}</span>
+          </button>
+          
+          <button 
+            mat-stroked-button 
+            type="button" 
+            (click)="cancelar()"
+            *ngIf="editando">
+            <mat-icon>cancel</mat-icon>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Lista de Productos -->
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>list</mat-icon>
+      </div>
+      <mat-card-title>Lista de Productos</mat-card-title>
+      <mat-card-subtitle>
+        {{ productos.length }} producto{{ productos.length !== 1 ? 's' : '' }} registrado{{ productos.length !== 1 ? 's' : '' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Loading -->
+      <div *ngIf="cargando" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Cargando productos...</p>
+      </div>
+
+      <!-- Grid de productos -->
+      <div class="productos-grid" *ngIf="!cargando && productos.length > 0">
+        <mat-card *ngFor="let producto of productos">
+          <mat-card-header>
+            <mat-card-title>{{ producto.nombre }}</mat-card-title>
+            <mat-card-subtitle>
+              <mat-chip>{{ producto.codigo }}</mat-chip>
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="detail-row">
+              <span>Costo:</span>
+              <strong>${{ producto.costo | number:'1.2-2' }}</strong>
+            </div>
+            
+            <div class="detail-row">
+              <span>Precio:</span>
+              <strong style="color: #4caf50;">${{ producto.precio | number:'1.2-2' }}</strong>
+            </div>
+            
+            <div class="detail-row">
+              <span>Valor:</span>
+              <strong>${{ producto.valor | number:'1.2-2' }}</strong>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions align="end">
+            <button mat-button color="primary" (click)="editar(producto)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+            <button mat-button color="warn" (click)="eliminar(producto.id)">
+              <mat-icon>delete</mat-icon>
+              Eliminar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <!-- Estado vacío -->
+      <div class="empty-state" *ngIf="!cargando && productos.length === 0">
+        <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: rgba(0,0,0,0.3);">inventory_2</mat-icon>
+        <h3>No hay productos registrados</h3>
+        <p>Agregue el primer producto usando el formulario de arriba.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

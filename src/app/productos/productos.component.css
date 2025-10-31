@@ -1,0 +1,89 @@
+/* Angular Material se encarga de casi todo */
+
+.productos-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Layout del header con botón */
+.productos-container mat-card:first-child mat-card-header {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.productos-container mat-card:first-child mat-card-header button {
+  margin-left: auto;
+  align-self: flex-start;
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+  min-width: 250px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Products grid */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-row mat-form-field {
+    min-width: unset;
+  }
+  
+  .productos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .productos-container mat-card:first-child mat-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
